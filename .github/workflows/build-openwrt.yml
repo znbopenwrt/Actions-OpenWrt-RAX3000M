@@ -18,6 +18,11 @@ on:
         description: 'SSH connection to Actions'
         required: false
         default: 'false'
+      release:
+        description: 'Release firmware'
+        required: false
+        default: 'false'
+        
 
 env:
   REPO_URL: https://github.com/hanwckf/immortalwrt-mt798x
@@ -159,9 +164,9 @@ jobs:
 
     - name: Generate release tag
       id: tag
-      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+      if: (env.UPLOAD_RELEASE == 'true' && github.event.inputs.release == 'true') && !cancelled()
       run: |
-        echo "::set-output name=release_tag::$(date +"%Y.%m.%d-%H%M")"
+        echo "::set-output name=release_tag::$(date -Iseconds)"
         touch release.txt
         [ $UPLOAD_COWTRANSFER = true ] && echo "🔗 [Cowtransfer](${{ steps.cowtransfer.outputs.url }})" >> release.txt
         [ $UPLOAD_WETRANSFER = true ] && echo "🔗 [WeTransfer](${{ steps.wetransfer.outputs.url }})" >> release.txt
